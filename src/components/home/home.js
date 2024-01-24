@@ -27,6 +27,11 @@ export const Container = styled.div`
         position: fixed;
         bottom: 20%;
         button{
+            width: 100px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             cursor: pointer;
         }
     }
