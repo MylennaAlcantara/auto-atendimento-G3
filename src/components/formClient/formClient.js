@@ -27,6 +27,11 @@ export const Container = styled.div`
         border: none;
         outline: 1px solid #083b7e;
     }
+
+    @media(max-width: 1024px){
+        height: 80%;
+        width: 90%;
+    }
 `
 export const NavBar = styled.div`
     width: 100%;
@@ -108,8 +113,9 @@ export const Documentos = styled.div`
     height: 80%;
     width: 100%;
     display: flex;
+    flex-direction: column;
     align-items: center;
-    justify-content: space-around;
+    justify-content: center;
     .box-doc{
         display: flex;
         flex-direction: column;

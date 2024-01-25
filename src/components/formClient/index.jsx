@@ -121,6 +121,47 @@ export const FormClient = () => {
                 </FC.DadosGerais>
             ) : (
                 <FC.Documentos>
+                    <div style={{width: "100%", display: "flex", alignItems: "center", justifyContent: "center"}}>
+                        <div className="box-doc">
+                            <div>
+                                <input type="checkbox" checked={dadosCliente.tipo_pessoa === "J" ? true : false}/>
+                                <label>Pessoa Juridica</label>
+                            </div>
+                            <div className="form-cpf">
+                                <div className="labels">
+                                    <label>CNPJ: </label>
+                                    <label>IM: </label>
+                                </div>
+                                <div className="inputs">
+                                    <div>
+                                        <input value={dadosCliente.cpf_cnpj.length > 11 ? dadosCliente.cpf_cnpj : ""} onChange={(e)=> setDadosCliente({...dadosCliente, cpf_cnpj: e.target.value})}/>
+                                        <button><img alt="lupa" src="/images/lupa.png"/></button>
+                                    </div>
+                                    <div>
+                                        <input value={dadosCliente.inscricao_municipal} onChange={(e)=> setDadosCliente({...dadosCliente, inscricao_municipal: e.target.value})}/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div className="box-doc">
+                            <div>
+                                <input type="checkbox" checked={dadosCliente.tipo_pessoa === 'F' ? true : false}/>
+                                <label>Pessoa Fisica</label>
+                            </div>
+                            <div className="form-cpf">
+                                <div className="labels">
+                                    <label>CPF: </label>
+                                    <label>RG: </label>
+                                    <label>Orgão: </label>
+                                </div>
+                                <div className="inputs">
+                                    <input value={dadosCliente.cpf} onChange={(e)=> setDadosCliente({...dadosCliente, cpf: e.target.value})}/>
+                                    <input value={dadosCliente.rg} onChange={(e)=> setDadosCliente({...dadosCliente, rg: e.target.value})}/>
+                                    <input value={dadosCliente.orgao_rg} onChange={(e)=> setDadosCliente({...dadosCliente, orgao_rg: e.target.value})}/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                     <div className="box-doc">
                         <div>
                             <label>Ins. Estadual: </label>
@@ -130,45 +171,6 @@ export const FormClient = () => {
                         <div>
                             <label>Contribuinte de ICMS: </label>
                             <input type="checkbox" checked={dadosCliente.contrib_icms ? true : false}/>
-                        </div>
-                    </div>
-                    <div className="box-doc">
-                        <div>
-                            <input type="checkbox" checked={dadosCliente.tipo_pessoa === "J" ? true : false}/>
-                            <label>Pessoa Juridica</label>
-                        </div>
-                        <div className="form-cpf">
-                            <div className="labels">
-                                <label>CNPJ: </label>
-                                <label>IM: </label>
-                            </div>
-                            <div className="inputs">
-                                <div>
-                                    <input value={dadosCliente.cpf_cnpj.length > 11 ? dadosCliente.cpf_cnpj : ""} onChange={(e)=> setDadosCliente({...dadosCliente, cpf_cnpj: e.target.value})}/>
-                                    <button><img alt="lupa" src="/images/lupa.png"/></button>
-                                </div>
-                                <div>
-                                    <input value={dadosCliente.inscricao_municipal} onChange={(e)=> setDadosCliente({...dadosCliente, inscricao_municipal: e.target.value})}/>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div className="box-doc">
-                        <div>
-                            <input type="checkbox" checked={dadosCliente.tipo_pessoa === 'F' ? true : false}/>
-                            <label>Pessoa Fisica</label>
-                        </div>
-                        <div className="form-cpf">
-                            <div className="labels">
-                                <label>CPF: </label>
-                                <label>RG: </label>
-                                <label>Orgão: </label>
-                            </div>
-                            <div className="inputs">
-                                <input value={dadosCliente.cpf} onChange={(e)=> setDadosCliente({...dadosCliente, cpf: e.target.value})}/>
-                                <input value={dadosCliente.rg} onChange={(e)=> setDadosCliente({...dadosCliente, rg: e.target.value})}/>
-                                <input value={dadosCliente.orgao_rg} onChange={(e)=> setDadosCliente({...dadosCliente, orgao_rg: e.target.value})}/>
-                            </div>
                         </div>
                     </div>
                 </FC.Documentos>
