@@ -6,11 +6,11 @@ export const Home = () => {
     const [novo, setNovo] = useState(false);
 
     return (
-        <H.Container>
+        <H.Container onClick={()=> setNovo(false)}>
             <div className="buttons">
-                <button onClick={()=> setNovo(true)}><img alt="adicionar" src="/images/add.png"/>Novo</button>
+                <button onClick={(e)=> {e.stopPropagation(); setNovo(true)}}><img alt="adicionar" src="/images/add.png"/>Novo</button>
             </div>
-            {novo ? <FormClient/> : null}
+            {novo ? <FormClient setNovo={setNovo}/> : null}
         </H.Container>
     )
 }

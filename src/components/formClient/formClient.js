@@ -29,8 +29,31 @@ export const Container = styled.div`
     }
 
     @media(max-width: 1024px){
-        height: 80%;
+        height: 70%;
         width: 90%;
+    }
+`
+export const Header = styled.div`
+    width: 100%;
+    height: auto;
+    margin-bottom: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: #F0F0F0;
+    border-radius: 5px 5px 0px 0px;
+    button{
+        margin: 0px;
+        height: 30px;
+        width: 30px;
+        border: none;
+        border-radius: 0px 5px 0px 0px;
+    }
+    button:hover{
+        background-color: red;
+        color: white;
+        border: none;
+        outline: 0;
     }
 `
 export const NavBar = styled.div`
@@ -54,7 +77,7 @@ export const DadosGerais = styled.div`
     width: 100%;
     height: 80%;
     display: flex;
-    margin-top: 20px;
+    align-items: center;
     form{
         margin: 0px auto;
         width: 95%;

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import * as FC from "./formClient";
 
-export const FormClient = () => {
+export const FormClient = ({setNovo}) => {
     const [aba, setAba] = useState("gerais");
     const [dadosCliente, setDadosCliente] = useState({
         id: 0,
@@ -53,7 +53,11 @@ export const FormClient = () => {
     },[])
 
     return (
-        <FC.Container>
+        <FC.Container onClick={(e)=> e.stopPropagation()}>
+            <FC.Header>
+                <h3>Cadastro Cliente</h3>
+                <button onClick={()=> setNovo(false)}>X</button>
+            </FC.Header>
             <FC.NavBar>
                 <button onClick={()=> setAba("gerais")} style={{backgroundColor: aba === "gerais" ? "white" : ""}}>Dados Gerais</button>
                 <button onClick={()=> setAba("documentos")} style={{backgroundColor: aba === "documentos" ? "white" : ""}}>Documentos</button>
