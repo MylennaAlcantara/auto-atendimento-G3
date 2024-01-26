@@ -1,7 +1,10 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import * as FC from "./formClient";
 
-export const FormClient = ({setNovo}) => {
+import Keyboard from "react-simple-keyboard";
+import "react-simple-keyboard/build/css/index.css";
+
+export const FormClient = ({ setNovo }) => {
     const [aba, setAba] = useState("gerais");
     const [dadosCliente, setDadosCliente] = useState({
         id: 0,
@@ -48,19 +51,42 @@ export const FormClient = ({setNovo}) => {
         setEstados(data);
     }
 
-    useEffect(()=>{
+    useEffect(() => {
         fetchEstados();
-    },[])
+    }, [])
+
+    const [layout, setLayout] = useState("default");
+    const keyboard = useRef();
+    const [keyboardVisibility, setKeyboardVisibility] = useState(false);
+
+    const onChange = (e) => {
+        setDadosCliente({...dadosCliente, [e.target?.name]: e.target.value});
+    };
+
+    const handleShift = () => {
+        const newLayoutName = layout === "default" ? "shift" : "default";
+        setLayout(newLayoutName);
+    };
+
+    const onKeyPress = (button) => {
+        if (button === "{shift}" || button === "{lock}") handleShift();
+    };
+
+    const handleChange = (e) => {
+        const input = e.target.value;
+        setDadosCliente({...dadosCliente, [e.target?.name]: input})
+        keyboard.current.setInput(input);
+    };
 
     return (
-        <FC.Container onClick={(e)=> e.stopPropagation()}>
+        <FC.Container onClick={(e) => e.stopPropagation()}>
             <FC.Header>
                 <h3>Cadastro Cliente</h3>
-                <button onClick={()=> setNovo(false)}>X</button>
+                <button onClick={() => setNovo(false)}>X</button>
             </FC.Header>
             <FC.NavBar>
-                <button onClick={()=> setAba("gerais")} style={{backgroundColor: aba === "gerais" ? "white" : ""}}>Dados Gerais</button>
-                <button onClick={()=> setAba("documentos")} style={{backgroundColor: aba === "documentos" ? "white" : ""}}>Documentos</button>
+                <button onClick={() => setAba("gerais")} style={{ backgroundColor: aba === "gerais" ? "white" : "" }}>Dados Gerais</button>
+                <button onClick={() => setAba("documentos")} style={{ backgroundColor: aba === "documentos" ? "white" : "" }}>Documentos</button>
             </FC.NavBar>
             {aba === "gerais" ? (
                 <FC.DadosGerais>
@@ -78,57 +104,58 @@ export const FormClient = ({setNovo}) => {
                         </div>
                         <div className="inputs">
                             <div>
-                                <input className="input-large" value={dadosCliente.nome} onChange={(e)=> setDadosCliente({...dadosCliente, nome: e.target.value})}/>
+                                <input className="input-large" name="nome" value={dadosCliente.nome} onChange={handleChange} onFocus={() => setKeyboardVisibility(true) } onBlur={()=>setKeyboardVisibility(false)} />
                             </div>
+                            
                             <div>
-                                <input className="input-large" value={dadosCliente.nome_fantasia} onChange={(e)=> setDadosCliente({...dadosCliente, nome_fantasia: e.target.value})}/>
+                                <input className="input-large" name="nome_fantasia" value={dadosCliente.nome_fantasia} onChange={handleChange} onFocus={() =>  setKeyboardVisibility(true) } onBlur={()=>setKeyboardVisibility(false)} />
                             </div>
                             <div className="cep-complemento">
-                                <input className="codigo" value={dadosCliente.cep} onChange={(e)=> setDadosCliente({...dadosCliente, cep: e.target.value})} onKeyDown={(e)=> e.key==="13" ? {pesquisarCep} : null}/>
-                                <button onClick={(e)=>{e.preventDefault(); pesquisarCep()}}><img alt="lupa" src="/images/lupa.png"/></button>
+                                <input className="codigo" name="cep" value={dadosCliente.cep} onChange={handleChange} onFocus={() => setKeyboardVisibility(true) } onBlur={()=>setKeyboardVisibility(false)} onKeyDown={(e) => e.key === "13" ? { pesquisarCep } : null} />
+                                <button onClick={(e) => { e.preventDefault(); pesquisarCep() }}><img alt="lupa" src="/images/lupa.png" /></button>
                                 <label>Complemento: </label>
-                                <input className="input-large" value={dadosCliente.complemento} onChange={(e)=> setDadosCliente({...dadosCliente, complemento: e.target.value})}/>
+                                <input className="input-large" name="complemento" value={dadosCliente.complemento} onChange={handleChange} onFocus={() => setKeyboardVisibility(true) } onBlur={()=>setKeyboardVisibility(false)} />
                             </div>
                             <div>
-                                <input className="input-large" value={dadosCliente.logradouro} onChange={(e)=> setDadosCliente({...dadosCliente, logradouro: e.target.value})}/>
+                                <input className="input-large" name="logradouro" value={dadosCliente.logradouro} onChange={handleChange} onFocus={() => setKeyboardVisibility(true) } onBlur={()=>setKeyboardVisibility(false)} />
                                 <label> - </label>
-                                <input className="codigo" value={dadosCliente.numero} onChange={(e)=> setDadosCliente({...dadosCliente, numero: e.target.value})}/>
+                                <input className="codigo"name="numero" value={dadosCliente.numero} onChange={handleChange} onFocus={() => setKeyboardVisibility(true) } onBlur={()=>setKeyboardVisibility(false)} />
                             </div>
                             <div>
-                                <input className="input-large" value={dadosCliente.bairro} onChange={(e)=> setDadosCliente({...dadosCliente, bairro: e.target.value})}/>
+                                <input className="input-large" name="bairro" value={dadosCliente.bairro} onChange={handleChange} onFocus={() => setKeyboardVisibility(true) } onBlur={()=> setKeyboardVisibility(false)} />
                             </div>
                             <div>
-                                <input className="codigo" value={dadosCliente.cod_municipio} onChange={(e)=> setDadosCliente({...dadosCliente, cod_municipio: e.target.value})}/>
-                                <button><img alt="lupa" src="/images/lupa.png"/></button>
-                                <input className="input-large" value={dadosCliente.CIDADE} onChange={(e)=> setDadosCliente({...dadosCliente, CIDADE: e.target.value})}/>
+                                <input className="codigo" name="cod_municipio" value={dadosCliente.cod_municipio} onChange={handleChange} onFocus={() => setKeyboardVisibility(true) } onBlur={()=> setKeyboardVisibility(false)} />
+                                <button><img alt="lupa" src="/images/lupa.png" /></button>
+                                <input className="input-large" name="CIDADE" value={dadosCliente.CIDADE} onChange={handleChange} onFocus={() => setKeyboardVisibility(true) } onBlur={()=> setKeyboardVisibility(false)} />
                                 <label>UF: </label>
                                 <select className="codigo">
                                     <option value={dadosCliente.estado}>{dadosCliente.estado}</option>
-                                    {estados.map((estado, index)=>{
-                                        return(
+                                    {estados.map((estado, index) => {
+                                        return (
                                             <option value={estado.sigla} key={index}>{estado.sigla}</option>
                                         )
                                     })}
                                 </select>
                             </div>
                             <div>
-                                <input value={dadosCliente.telefone} onChange={(e)=> setDadosCliente({...dadosCliente, telefone: e.target.value})}/>
+                                <input name="telefone" value={dadosCliente.telefone} onChange={handleChange} onFocus={() => setKeyboardVisibility(true) } onBlur={()=>setKeyboardVisibility(false)} />
                                 <label>Celular: </label>
-                                <input value={dadosCliente.celular} onChange={(e)=> setDadosCliente({...dadosCliente, celular: e.target.value})}/>
+                                <input name="celular" value={dadosCliente.celular} onChange={handleChange} onFocus={() => setKeyboardVisibility(true) } onBlur={()=>setKeyboardVisibility(false)} />
                             </div>
-                            <input type="date"  value={dadosCliente.DATA_NASC} onChange={(e)=> setDadosCliente({...dadosCliente, DATA_NASC: e.target.value})}/>
+                            <input type="date" name="DATA_NASC" value={dadosCliente.DATA_NASC} onChange={handleChange} onFocus={() => setKeyboardVisibility(true) } onBlur={()=>setKeyboardVisibility(false)} />
                             <div>
-                                <input className="input-large" value={dadosCliente.email} onChange={(e)=> setDadosCliente({...dadosCliente, email: e.target.value})}/>
+                                <input className="input-large" name="email" value={dadosCliente.email} onChange={handleChange} onFocus={() => setKeyboardVisibility(true) } onBlur={()=>setKeyboardVisibility(false)} />
                             </div>
                         </div>
                     </form>
                 </FC.DadosGerais>
             ) : (
                 <FC.Documentos>
-                    <div style={{width: "100%", display: "flex", alignItems: "center", justifyContent: "center"}}>
+                    <div style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "center" }}>
                         <div className="box-doc">
                             <div>
-                                <input type="checkbox" checked={dadosCliente.tipo_pessoa === "J" ? true : false}/>
+                                <input type="checkbox" checked={dadosCliente.tipo_pessoa === "J" ? true : false} />
                                 <label>Pessoa Juridica</label>
                             </div>
                             <div className="form-cpf">
@@ -138,18 +165,18 @@ export const FormClient = ({setNovo}) => {
                                 </div>
                                 <div className="inputs">
                                     <div>
-                                        <input value={dadosCliente.cpf_cnpj.length > 11 ? dadosCliente.cpf_cnpj : ""} onChange={(e)=> setDadosCliente({...dadosCliente, cpf_cnpj: e.target.value})}/>
-                                        <button><img alt="lupa" src="/images/lupa.png"/></button>
+                                        <input value={dadosCliente.cpf_cnpj.length > 11 ? dadosCliente.cpf_cnpj : ""}  onChange={handleChange} onFocus={() => setKeyboardVisibility(true) } onBlur={()=>setKeyboardVisibility(false)} />
+                                        <button><img alt="lupa" src="/images/lupa.png" /></button>
                                     </div>
                                     <div>
-                                        <input value={dadosCliente.inscricao_municipal} onChange={(e)=> setDadosCliente({...dadosCliente, inscricao_municipal: e.target.value})}/>
+                                        <input value={dadosCliente.inscricao_municipal}  onChange={handleChange} onFocus={() => setKeyboardVisibility(true) } onBlur={()=>setKeyboardVisibility(false)} />
                                     </div>
                                 </div>
                             </div>
                         </div>
                         <div className="box-doc">
                             <div>
-                                <input type="checkbox" checked={dadosCliente.tipo_pessoa === 'F' ? true : false}/>
+                                <input type="checkbox" checked={dadosCliente.tipo_pessoa === 'F' ? true : false} />
                                 <label>Pessoa Fisica</label>
                             </div>
                             <div className="form-cpf">
@@ -159,9 +186,9 @@ export const FormClient = ({setNovo}) => {
                                     <label>Orgão: </label>
                                 </div>
                                 <div className="inputs">
-                                    <input value={dadosCliente.cpf} onChange={(e)=> setDadosCliente({...dadosCliente, cpf: e.target.value})}/>
-                                    <input value={dadosCliente.rg} onChange={(e)=> setDadosCliente({...dadosCliente, rg: e.target.value})}/>
-                                    <input value={dadosCliente.orgao_rg} onChange={(e)=> setDadosCliente({...dadosCliente, orgao_rg: e.target.value})}/>
+                                    <input value={dadosCliente.cpf}  onChange={handleChange} onFocus={() => setKeyboardVisibility(true) } onBlur={()=>setKeyboardVisibility(false)} />
+                                    <input value={dadosCliente.rg}  onChange={handleChange} onFocus={() => setKeyboardVisibility(true) } onBlur={()=>setKeyboardVisibility(false)} />
+                                    <input value={dadosCliente.orgao_rg}  onChange={handleChange} onFocus={() => setKeyboardVisibility(true) } onBlur={()=>setKeyboardVisibility(false)} />
                                 </div>
                             </div>
                         </div>
@@ -169,17 +196,25 @@ export const FormClient = ({setNovo}) => {
                     <div className="box-doc">
                         <div>
                             <label>Ins. Estadual: </label>
-                            <input value={dadosCliente.inscricao_estadual} onChange={(e)=> setDadosCliente({...dadosCliente, inscricao_estadual: e.target.value})}/>
-                            <button><img alt="lupa" src="/images/lupa.png"/></button>
+                            <input value={dadosCliente.inscricao_estadual}  onChange={handleChange} onFocus={() => setKeyboardVisibility(true) } onBlur={()=>setKeyboardVisibility(false)} />
+                            <button><img alt="lupa" src="/images/lupa.png" /></button>
                         </div>
                         <div>
                             <label>Contribuinte de ICMS: </label>
-                            <input type="checkbox" checked={dadosCliente.contrib_icms ? true : false}/>
+                            <input type="checkbox" checked={dadosCliente.contrib_icms ? true : false} />
                         </div>
                     </div>
                 </FC.Documentos>
             )}
-            <button><img alt="salvar" src="/images/salvar.png"/>Salvar</button>
+            <button><img alt="salvar" src="/images/salvar.png" />Salvar</button>
+            {keyboardVisibility && (
+                <Keyboard
+                    keyboardRef={(r) => (keyboard.current = r)}
+                    layoutName={layout}
+                    onChange={onChange}
+                    onKeyPress={onKeyPress}
+                />
+            )}
         </FC.Container>
     )
 }
