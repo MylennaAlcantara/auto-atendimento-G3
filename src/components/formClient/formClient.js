@@ -195,3 +195,10 @@ export const Documentos = styled.div`
         }
     }
 `
+
+export const Keyboard = styled.div`
+    width: 100vw;
+    position: fixed;
+    bottom: 0px;
+    left: 0px;
+`

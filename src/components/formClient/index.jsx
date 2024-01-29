@@ -56,11 +56,15 @@ export const FormClient = ({ setNovo }) => {
     }, [])
 
     const [layout, setLayout] = useState("default");
+    const [inputName, setInputName] = useState("");
     const keyboard = useRef();
     const [keyboardVisibility, setKeyboardVisibility] = useState(false);
 
-    const onChange = (e) => {
-        setDadosCliente({...dadosCliente, [e.target?.name]: e.target.value});
+    const onChange = (input) => {
+        console.log(input);
+        if(dadosCliente[inputName] !== input){
+            setDadosCliente({...dadosCliente, [inputName]: input});
+        }
     };
 
     const handleShift = () => {
@@ -74,12 +78,12 @@ export const FormClient = ({ setNovo }) => {
 
     const handleChange = (e) => {
         const input = e.target.value;
-        setDadosCliente({...dadosCliente, [e.target?.name]: input})
+        setDadosCliente({ ...dadosCliente, [inputName]: input })
         keyboard.current.setInput(input);
     };
 
     return (
-        <FC.Container onClick={(e) => e.stopPropagation()}>
+        <FC.Container onClick={(e) => {e.stopPropagation(); /*setKeyboardVisibility(false)*/}} style={{position: keyboardVisibility && "absolute", top: keyboardVisibility && "0px", left: keyboardVisibility && "auto", right:  keyboardVisibility && "auto"}}>
             <FC.Header>
                 <h3>Cadastro Cliente</h3>
                 <button onClick={() => setNovo(false)}>X</button>
@@ -89,7 +93,7 @@ export const FormClient = ({ setNovo }) => {
                 <button onClick={() => setAba("documentos")} style={{ backgroundColor: aba === "documentos" ? "white" : "" }}>Documentos</button>
             </FC.NavBar>
             {aba === "gerais" ? (
-                <FC.DadosGerais>
+                <FC.DadosGerais >
                     <form>
                         <div className="labels">
                             <label>Nome: </label>
@@ -104,30 +108,42 @@ export const FormClient = ({ setNovo }) => {
                         </div>
                         <div className="inputs">
                             <div>
-                                <input className="input-large" name="nome" value={dadosCliente.nome} onChange={handleChange} onFocus={() => setKeyboardVisibility(true) } onBlur={()=>setKeyboardVisibility(false)} />
+                                <input
+                                    className="input-large"
+                                    name="nome"
+                                    value={dadosCliente.nome}
+                                    onChange={handleChange}
+                                    onFocus={() => {if(inputName !== ""){keyboard.current.clearInput()}; setInputName("nome"); setKeyboardVisibility(true)} }
+                                    />
                             </div>
-                            
+
                             <div>
-                                <input className="input-large" name="nome_fantasia" value={dadosCliente.nome_fantasia} onChange={handleChange} onFocus={() =>  setKeyboardVisibility(true) } onBlur={()=>setKeyboardVisibility(false)} />
+                                <input
+                                    className="input-large"
+                                    name="nome_fantasia"
+                                    value={dadosCliente.nome_fantasia}
+                                    onChange={handleChange}
+                                    onFocus={() => {if(inputName !== ""){keyboard.current.clearInput();} setInputName("nome_fantasia"); setKeyboardVisibility(true)}}
+                                     />
                             </div>
                             <div className="cep-complemento">
-                                <input className="codigo" name="cep" value={dadosCliente.cep} onChange={handleChange} onFocus={() => setKeyboardVisibility(true) } onBlur={()=>setKeyboardVisibility(false)} onKeyDown={(e) => e.key === "13" ? { pesquisarCep } : null} />
+                                <input className="codigo" name="cep" value={dadosCliente.cep} onChange={handleChange} onFocus={() => {if(inputName !== ""){keyboard.current.clearInput();}setInputName("cep"); setKeyboardVisibility(true)}}  onKeyDown={(e) => e.key === "13" ? { pesquisarCep } : null} />
                                 <button onClick={(e) => { e.preventDefault(); pesquisarCep() }}><img alt="lupa" src="/images/lupa.png" /></button>
                                 <label>Complemento: </label>
-                                <input className="input-large" name="complemento" value={dadosCliente.complemento} onChange={handleChange} onFocus={() => setKeyboardVisibility(true) } onBlur={()=>setKeyboardVisibility(false)} />
+                                <input className="input-large" name="complemento" value={dadosCliente.complemento} onChange={handleChange} onFocus={() => {if(inputName !== ""){keyboard.current.clearInput();}setInputName("complemento"); setKeyboardVisibility(true)}}  />
                             </div>
                             <div>
-                                <input className="input-large" name="logradouro" value={dadosCliente.logradouro} onChange={handleChange} onFocus={() => setKeyboardVisibility(true) } onBlur={()=>setKeyboardVisibility(false)} />
+                                <input className="input-large" name="logradouro" value={dadosCliente.logradouro} onChange={handleChange} onFocus={() => {if(inputName !== ""){keyboard.current.clearInput();}setInputName("logradouro"); setKeyboardVisibility(true)}}  />
                                 <label> - </label>
-                                <input className="codigo"name="numero" value={dadosCliente.numero} onChange={handleChange} onFocus={() => setKeyboardVisibility(true) } onBlur={()=>setKeyboardVisibility(false)} />
+                                <input className="codigo" name="numero" value={dadosCliente.numero} onChange={handleChange} onFocus={() => {if(inputName !== ""){keyboard.current.clearInput();}setInputName("numero"); setKeyboardVisibility(true)}}  />
                             </div>
                             <div>
-                                <input className="input-large" name="bairro" value={dadosCliente.bairro} onChange={handleChange} onFocus={() => setKeyboardVisibility(true) } onBlur={()=> setKeyboardVisibility(false)} />
+                                <input className="input-large" name="bairro" value={dadosCliente.bairro} onChange={handleChange} onFocus={() => {if(inputName !== ""){keyboard.current.clearInput();}setInputName("bairro"); setKeyboardVisibility(true)}}  />
                             </div>
                             <div>
-                                <input className="codigo" name="cod_municipio" value={dadosCliente.cod_municipio} onChange={handleChange} onFocus={() => setKeyboardVisibility(true) } onBlur={()=> setKeyboardVisibility(false)} />
+                                <input className="codigo" name="cod_municipio" value={dadosCliente.cod_municipio} onChange={handleChange} onFocus={() => {if(inputName !== ""){keyboard.current.clearInput();}setInputName("cod_municipio"); setKeyboardVisibility(true)}}  />
                                 <button><img alt="lupa" src="/images/lupa.png" /></button>
-                                <input className="input-large" name="CIDADE" value={dadosCliente.CIDADE} onChange={handleChange} onFocus={() => setKeyboardVisibility(true) } onBlur={()=> setKeyboardVisibility(false)} />
+                                <input className="input-large" name="CIDADE" value={dadosCliente.CIDADE} onChange={handleChange} onFocus={() => {if(inputName !== ""){keyboard.current.clearInput();}setInputName("CIDADE"); setKeyboardVisibility(true)}}  />
                                 <label>UF: </label>
                                 <select className="codigo">
                                     <option value={dadosCliente.estado}>{dadosCliente.estado}</option>
@@ -139,13 +155,13 @@ export const FormClient = ({ setNovo }) => {
                                 </select>
                             </div>
                             <div>
-                                <input name="telefone" value={dadosCliente.telefone} onChange={handleChange} onFocus={() => setKeyboardVisibility(true) } onBlur={()=>setKeyboardVisibility(false)} />
+                                <input name="telefone" value={dadosCliente.telefone} onChange={handleChange} onFocus={() => {if(inputName !== ""){keyboard.current.clearInput();}setInputName("telefone"); setKeyboardVisibility(true)}}  />
                                 <label>Celular: </label>
-                                <input name="celular" value={dadosCliente.celular} onChange={handleChange} onFocus={() => setKeyboardVisibility(true) } onBlur={()=>setKeyboardVisibility(false)} />
+                                <input name="celular" value={dadosCliente.celular} onChange={handleChange} onFocus={() => {if(inputName !== ""){keyboard.current.clearInput();}setInputName("celular"); setKeyboardVisibility(true)}}  />
                             </div>
-                            <input type="date" name="DATA_NASC" value={dadosCliente.DATA_NASC} onChange={handleChange} onFocus={() => setKeyboardVisibility(true) } onBlur={()=>setKeyboardVisibility(false)} />
+                            <input type="date" name="DATA_NASC" value={dadosCliente.DATA_NASC} onChange={handleChange} onFocus={() => {if(inputName !== ""){keyboard.current.clearInput();}setInputName("DATA_NASC"); setKeyboardVisibility(true)}}  />
                             <div>
-                                <input className="input-large" name="email" value={dadosCliente.email} onChange={handleChange} onFocus={() => setKeyboardVisibility(true) } onBlur={()=>setKeyboardVisibility(false)} />
+                                <input className="input-large" name="email" value={dadosCliente.email} onChange={handleChange} onFocus={() => {if(inputName !== ""){keyboard.current.clearInput();}setInputName("email"); setKeyboardVisibility(true)}}  />
                             </div>
                         </div>
                     </form>
@@ -165,11 +181,11 @@ export const FormClient = ({ setNovo }) => {
                                 </div>
                                 <div className="inputs">
                                     <div>
-                                        <input value={dadosCliente.cpf_cnpj.length > 11 ? dadosCliente.cpf_cnpj : ""}  onChange={handleChange} onFocus={() => setKeyboardVisibility(true) } onBlur={()=>setKeyboardVisibility(false)} />
+                                        <input name="cpf_cnpj" value={dadosCliente.cpf_cnpj} onChange={handleChange} onFocus={() => {if(inputName !== ""){keyboard.current.clearInput();}; setInputName("cpf_cnpj"); setKeyboardVisibility(true)}}  />
                                         <button><img alt="lupa" src="/images/lupa.png" /></button>
                                     </div>
                                     <div>
-                                        <input value={dadosCliente.inscricao_municipal}  onChange={handleChange} onFocus={() => setKeyboardVisibility(true) } onBlur={()=>setKeyboardVisibility(false)} />
+                                        <input name="inscricao_municipal" value={dadosCliente.inscricao_municipal} onChange={handleChange} onFocus={() => {if(inputName !== ""){keyboard.current.clearInput();}; setInputName("inscricao_municipal"); setKeyboardVisibility(true)}}  />
                                     </div>
                                 </div>
                             </div>
@@ -186,9 +202,9 @@ export const FormClient = ({ setNovo }) => {
                                     <label>Orgão: </label>
                                 </div>
                                 <div className="inputs">
-                                    <input value={dadosCliente.cpf}  onChange={handleChange} onFocus={() => setKeyboardVisibility(true) } onBlur={()=>setKeyboardVisibility(false)} />
-                                    <input value={dadosCliente.rg}  onChange={handleChange} onFocus={() => setKeyboardVisibility(true) } onBlur={()=>setKeyboardVisibility(false)} />
-                                    <input value={dadosCliente.orgao_rg}  onChange={handleChange} onFocus={() => setKeyboardVisibility(true) } onBlur={()=>setKeyboardVisibility(false)} />
+                                    <input name="cpf" value={dadosCliente.cpf} onChange={handleChange} onFocus={() => {if(inputName !== ""){keyboard.current.clearInput();}setInputName("cpf"); setKeyboardVisibility(true)}}  />
+                                    <input name="rg" value={dadosCliente.rg} onChange={handleChange} onFocus={() => {if(inputName !== ""){keyboard.current.clearInput();}setInputName("rg"); setKeyboardVisibility(true)}}  />
+                                    <input name="orgao_rg" value={dadosCliente.orgao_rg} onChange={handleChange} onFocus={() => {if(inputName !== ""){keyboard.current.clearInput();}setInputName("orgao_rg"); setKeyboardVisibility(true)}}  />
                                 </div>
                             </div>
                         </div>
@@ -196,7 +212,7 @@ export const FormClient = ({ setNovo }) => {
                     <div className="box-doc">
                         <div>
                             <label>Ins. Estadual: </label>
-                            <input value={dadosCliente.inscricao_estadual}  onChange={handleChange} onFocus={() => setKeyboardVisibility(true) } onBlur={()=>setKeyboardVisibility(false)} />
+                            <input name="inscricao_estadual" value={dadosCliente.inscricao_estadual} onChange={handleChange} onFocus={() => {if(inputName !== ""){keyboard.current.clearInput();}setInputName("inscricao_estadual"); setKeyboardVisibility(true)}}  />
                             <button><img alt="lupa" src="/images/lupa.png" /></button>
                         </div>
                         <div>
@@ -208,12 +224,15 @@ export const FormClient = ({ setNovo }) => {
             )}
             <button><img alt="salvar" src="/images/salvar.png" />Salvar</button>
             {keyboardVisibility && (
-                <Keyboard
-                    keyboardRef={(r) => (keyboard.current = r)}
-                    layoutName={layout}
-                    onChange={onChange}
-                    onKeyPress={onKeyPress}
-                />
+                <FC.Keyboard>
+                    <Keyboard
+                        keyboardRef={(r) => (keyboard.current = r)}
+                        layoutName={layout}
+                        onChange={onChange}
+                        onKeyPress={onKeyPress}
+                        disableCaretPositioning={false}
+                    />
+                </FC.Keyboard>
             )}
         </FC.Container>
     )
