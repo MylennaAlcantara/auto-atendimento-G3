@@ -84,11 +84,19 @@ export const FormClient = ({ setNovo }) => {
 
     const isTabletWithoutMouse = () => {
         return (
-          /windows/i.test(navigator.userAgent) &&
-          navigator.maxTouchPoints &&
-          navigator.maxTouchPoints > 1
+            /windows/i.test(navigator.userAgent) &&
+            navigator.maxTouchPoints &&
+            navigator.maxTouchPoints > 1
         );
-      };
+    };
+
+    const onFocusHandler = () => {
+        if (keyboard.current) {
+            keyboard.current.clearInput();
+            keyboard.current.setInput(dadosCliente[inputName]);
+        }
+        setKeyboardVisibility(true);
+    };
 
     return (
         <FC.Container onClick={(e) => { e.stopPropagation(); /*setKeyboardVisibility(false)*/ }} style={{ position: keyboardVisibility && isTabletWithoutMouse() && "absolute", top: keyboardVisibility && isTabletWithoutMouse() && "0px", left: keyboardVisibility && isTabletWithoutMouse() && "auto", right: keyboardVisibility && isTabletWithoutMouse() && "auto" }}>
@@ -121,7 +129,7 @@ export const FormClient = ({ setNovo }) => {
                                     name="nome"
                                     value={dadosCliente.nome}
                                     onChange={handleChange}
-                                    onFocus={() => { if (inputName === "nome") { keyboard.current.clearInput(); keyboard.current.setInput(dadosCliente.nome); }; setInputName("nome"); setKeyboardVisibility(true) }}
+                                    onFocus={onFocusHandler}
                                 />
                             </div>
 
@@ -131,27 +139,27 @@ export const FormClient = ({ setNovo }) => {
                                     name="nome_fantasia"
                                     value={dadosCliente.nome_fantasia}
                                     onChange={handleChange}
-                                    onFocus={() => { if (inputName === "nome_fantasia") { keyboard.current.clearInput(); keyboard.current.setInput(dadosCliente.nome_fantasia); } setInputName("nome_fantasia"); setKeyboardVisibility(true) }}
+                                    onFocus={onFocusHandler}
                                 />
                             </div>
                             <div className="cep-complemento">
-                                <input className="codigo" name="cep" value={dadosCliente.cep} onChange={handleChange} onFocus={() => { if (inputName !== "") { keyboard.current.clearInput(); keyboard.current.setInput(dadosCliente.cep); }; setInputName("cep"); setKeyboardVisibility(true) }} onKeyDown={(e) => e.key === "13" ? { pesquisarCep } : null} />
+                                <input className="codigo" name="cep" value={dadosCliente.cep} onChange={handleChange} onFocus={onFocusHandler} onKeyDown={(e) => e.key === "13" ? { pesquisarCep } : null} />
                                 <button onClick={(e) => { e.preventDefault(); pesquisarCep() }}><img alt="lupa" src="/images/lupa.png" /></button>
                                 <label>Complemento: </label>
-                                <input className="input-large" name="complemento" value={dadosCliente.complemento} onChange={handleChange} onFocus={() => { if (inputName !== "") { keyboard.current.clearInput(); keyboard.current.setInput(dadosCliente.complemento); }; setInputName("complemento"); setKeyboardVisibility(true) }} />
+                                <input className="input-large" name="complemento" value={dadosCliente.complemento} onChange={handleChange} onFocus={onFocusHandler} />
                             </div>
                             <div>
-                                <input className="input-large" name="logradouro" value={dadosCliente.logradouro} onChange={handleChange} onFocus={() => { if (inputName !== "") { keyboard.current.clearInput(); keyboard.current.setInput(dadosCliente.logradouro); }; setInputName("logradouro"); setKeyboardVisibility(true) }} />
+                                <input className="input-large" name="logradouro" value={dadosCliente.logradouro} onChange={handleChange} onFocus={onFocusHandler} />
                                 <label> - </label>
-                                <input className="codigo" name="numero" value={dadosCliente.numero} onChange={handleChange} onFocus={() => { if (inputName !== "") { keyboard.current.clearInput(); keyboard.current.setInput(dadosCliente.numero); setInputName("numero"); }; setKeyboardVisibility(true) }} />
+                                <input className="codigo" name="numero" value={dadosCliente.numero} onChange={handleChange} onFocus={onFocusHandler} />
                             </div>
                             <div>
-                                <input className="input-large" name="bairro" value={dadosCliente.bairro} onChange={handleChange} onFocus={() => { if (inputName !== "") { keyboard.current.clearInput(); keyboard.current.setInput(dadosCliente.bairro); setInputName("bairro"); }; setKeyboardVisibility(true) }} />
+                                <input className="input-large" name="bairro" value={dadosCliente.bairro} onChange={handleChange} onFocus={onFocusHandler} />
                             </div>
                             <div>
-                                <input className="codigo" name="cod_municipio" value={dadosCliente.cod_municipio} onChange={handleChange} onFocus={() => { if (inputName !== "") { keyboard.current.clearInput(); keyboard.current.setInput(dadosCliente.cod_municipio); }; setInputName("cod_municipio"); setKeyboardVisibility(true) }} />
+                                <input className="codigo" name="cod_municipio" value={dadosCliente.cod_municipio} onChange={handleChange} onFocus={onFocusHandler} />
                                 <button><img alt="lupa" src="/images/lupa.png" /></button>
-                                <input className="input-large" name="CIDADE" value={dadosCliente.CIDADE} onChange={handleChange} onFocus={() => { if (inputName !== "") { keyboard.current.clearInput(); keyboard.current.setInput(dadosCliente.CIDADE); setInputName("CIDADE"); }; setKeyboardVisibility(true) }} />
+                                <input className="input-large" name="CIDADE" value={dadosCliente.CIDADE} onChange={handleChange} onFocus={onFocusHandler} />
                                 <label>UF: </label>
                                 <select className="codigo">
                                     <option value={dadosCliente.estado}>{dadosCliente.estado}</option>
@@ -163,13 +171,13 @@ export const FormClient = ({ setNovo }) => {
                                 </select>
                             </div>
                             <div>
-                                <input name="telefone" value={dadosCliente.telefone} onChange={handleChange} onFocus={() => { if (inputName !== "") { keyboard.current.clearInput(); keyboard.current.setInput(dadosCliente.telefone); }; setInputName("telefone"); setKeyboardVisibility(true) }} />
+                                <input name="telefone" value={dadosCliente.telefone} onChange={handleChange} onFocus={onFocusHandler} />
                                 <label>Celular: </label>
-                                <input name="celular" value={dadosCliente.celular} onChange={handleChange} onFocus={() => { if (inputName !== "") { keyboard.current.clearInput(); keyboard.current.setInput(dadosCliente.celular); }; setInputName("celular"); setKeyboardVisibility(true) }} />
+                                <input name="celular" value={dadosCliente.celular} onChange={handleChange} onFocus={onFocusHandler} />
                             </div>
-                            <input type="date" name="DATA_NASC" value={dadosCliente.DATA_NASC} onChange={handleChange} onFocus={() => { if (inputName !== "") { keyboard.current.clearInput(); keyboard.current.setInput(dadosCliente.DATA_NASC); }; setInputName("DATA_NASC"); setKeyboardVisibility(true) }} />
+                            <input type="date" name="DATA_NASC" value={dadosCliente.DATA_NASC} onChange={handleChange} onFocus={onFocusHandler} />
                             <div>
-                                <input className="input-large" name="email" value={dadosCliente.email} onChange={handleChange} onFocus={() => { if (inputName !== "") { keyboard.current.clearInput(); keyboard.current.setInput(dadosCliente.email); }; setInputName("email"); setKeyboardVisibility(true) }} />
+                                <input className="input-large" name="email" value={dadosCliente.email} onChange={handleChange} onFocus={onFocusHandler} />
                             </div>
                         </div>
                     </form>
@@ -189,11 +197,11 @@ export const FormClient = ({ setNovo }) => {
                                 </div>
                                 <div className="inputs">
                                     <div>
-                                        <input name="cpf_cnpj" value={dadosCliente.cpf_cnpj} onChange={handleChange} onFocus={() => { if (inputName !== "") { keyboard.current.clearInput(); keyboard.current.setInput(dadosCliente.cpf_cnpj); }; setInputName("cpf_cnpj"); setKeyboardVisibility(true) }} />
+                                        <input name="cpf_cnpj" value={dadosCliente.cpf_cnpj} onChange={handleChange} onFocus={onFocusHandler} />
                                         <button><img alt="lupa" src="/images/lupa.png" /></button>
                                     </div>
                                     <div>
-                                        <input name="inscricao_municipal" value={dadosCliente.inscricao_municipal} onChange={handleChange} onFocus={() => { if (inputName !== "") { keyboard.current.clearInput(); keyboard.current.setInput(dadosCliente.inscricao_municipal); }; setInputName("inscricao_municipal"); setKeyboardVisibility(true) }} />
+                                        <input name="inscricao_municipal" value={dadosCliente.inscricao_municipal} onChange={handleChange} onFocus={onFocusHandler} />
                                     </div>
                                 </div>
                             </div>
@@ -210,9 +218,9 @@ export const FormClient = ({ setNovo }) => {
                                     <label>Orgão: </label>
                                 </div>
                                 <div className="inputs">
-                                    <input name="cpf" value={dadosCliente.cpf} onChange={handleChange} onFocus={() => { if (inputName !== "") { keyboard.current.clearInput(); keyboard.current.setInput(dadosCliente.cpf); }; setInputName("cpf"); setKeyboardVisibility(true) }} />
-                                    <input name="rg" value={dadosCliente.rg} onChange={handleChange} onFocus={() => { if (inputName !== "") { keyboard.current.clearInput(); keyboard.current.setInput(dadosCliente.rg); }; setInputName("rg"); setKeyboardVisibility(true) }} />
-                                    <input name="orgao_rg" value={dadosCliente.orgao_rg} onChange={handleChange} onFocus={() => { if (inputName !== "") { keyboard.current.clearInput(); keyboard.current.setInput(dadosCliente.orgao_rg); }; setInputName("orgao_rg"); setKeyboardVisibility(true) }} />
+                                    <input name="cpf" value={dadosCliente.cpf} onChange={handleChange} onFocus={onFocusHandler} />
+                                    <input name="rg" value={dadosCliente.rg} onChange={handleChange} onFocus={onFocusHandler} />
+                                    <input name="orgao_rg" value={dadosCliente.orgao_rg} onChange={handleChange} onFocus={onFocusHandler} />
                                 </div>
                             </div>
                         </div>
@@ -220,7 +228,7 @@ export const FormClient = ({ setNovo }) => {
                     <div className="box-doc">
                         <div>
                             <label>Ins. Estadual: </label>
-                            <input name="inscricao_estadual" value={dadosCliente.inscricao_estadual} onChange={handleChange} onFocus={() => { if (inputName !== "") { keyboard.current.clearInput(); keyboard.current.setInput(dadosCliente.inscricao_estadual); }; setInputName("inscricao_estadual"); setKeyboardVisibility(true) }} />
+                            <input name="inscricao_estadual" value={dadosCliente.inscricao_estadual} onChange={handleChange} onFocus={onFocusHandler} />
                             <button><img alt="lupa" src="/images/lupa.png" /></button>
                         </div>
                         <div>
