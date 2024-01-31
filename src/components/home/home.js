@@ -35,4 +35,10 @@ export const Container = styled.div`
             cursor: pointer;
         }
     }
+    @media(max-width: 460px){
+        width: 100%;
+        height: 100%;
+        align-items: center;
+        justify-content: start;
+    }
 `

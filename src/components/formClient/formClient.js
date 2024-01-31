@@ -32,6 +32,12 @@ export const Container = styled.div`
         height: 70%;
         width: 90%;
     }
+
+    @media(max-width: 460px){
+        margin-top: 5%;
+        width: 95%;
+        height: 80%;
+    }
 `
 export const Header = styled.div`
     width: 100%;

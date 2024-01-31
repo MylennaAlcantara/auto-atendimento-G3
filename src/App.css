@@ -20,3 +20,8 @@
   position: absolute;
 }
 
+@media (max-width: 460px) {
+  .App{
+    height: 1fr;
+  }
+}
