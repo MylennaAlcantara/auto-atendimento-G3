@@ -27,6 +27,7 @@ export const Container = styled.div`
         position: fixed;
         bottom: 20%;
         button{
+            margin: 5px;
             width: 100px;
             height: 30px;
             display: flex;
