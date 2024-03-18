@@ -1,16 +1,16 @@
 import * as M from "./mensagem"
 
-export const Mensage = ({onCLose, mensage}) => {
+export const Mensage = ({onClose, mensage}) => {
     return(
         <M.Modal>
             <M.Container>
                 <M.Header>
                     <h3>Alerta do sistema!</h3>
-                    <button onClick={onCLose}>X</button>
+                    <button onClick={onClose}>X</button>
                 </M.Header>
 
                 <p>{mensage}</p>
-                <button onClick={onCLose}>OK</button>
+                <button onClick={onClose}>OK</button>
             </M.Container>
         </M.Modal>
     )
