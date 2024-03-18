@@ -33,7 +33,7 @@ export const CityModal = ({ onClose, dadosCliente, setDadosCliente }) => {
         setDadosCliente({
             ...dadosCliente, 
             cod_municipio: municipio.id,
-            CIDADE: municipio.nome,
+            cidade: municipio.nome,
             estado: municipio.microrregiao.mesorregiao.UF.sigla
         });
         onClose();
