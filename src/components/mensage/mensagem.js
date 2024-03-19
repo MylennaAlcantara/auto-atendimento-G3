@@ -22,14 +22,15 @@ export const Container = styled.div`
     flex-direction: column;
     align-items: center;
     justify-content: space-between;
+    overflow: auto;
     button{
         margin: 5px;
     }
     p{
         text-align: left;
-        word-break: break-all;
         white-space: normal;
         margin: 0px 5px;
+        word-wrap: break-word;
     }
 `
 

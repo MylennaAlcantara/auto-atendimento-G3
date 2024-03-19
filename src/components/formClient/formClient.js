@@ -162,6 +162,9 @@ export const Documentos = styled.div`
             width: auto;
             margin: 5px 5px 0px;
         }
+        input[type=checkbox]{
+            height: auto;
+        }
         button{
             width: auto;
             height: 24px;

@@ -1,10 +1,9 @@
 import { useEffect, useRef, useState } from "react";
-import * as FC from "./formClient";
-
 import Keyboard from "react-simple-keyboard";
 import "react-simple-keyboard/build/css/index.css";
 import { CityModal } from "../cityModal";
 import { Mensage } from "../mensage";
+import * as FC from "./formClient";
 
 export const FormClient = ({ setNovo }) => {
     const [aba, setAba] = useState("gerais");
@@ -17,9 +16,9 @@ export const FormClient = ({ setNovo }) => {
         logradouro: "",
         numero: "",
         bairro: "",
-        cod_municipio: "",
-        CIDADE: "",
-        estado: "",
+        cod_municipio: "2604106",
+        cidade: "Caruaru",
+        estado: "PE",
         telefone: "",
         celular: "",
         DATA_NASC: null,
@@ -39,8 +38,11 @@ export const FormClient = ({ setNovo }) => {
     const keyboard = useRef();
     const [keyboardVisibility, setKeyboardVisibility] = useState(false);
     const [cityModal, setCityModal] = useState(false);
-    const [mensage, setMensage] = useState("");
-    const [mensageOpen, setMensageOpen] = useState(false);
+    const [message, setMessage] = useState({
+        message: "",
+        messageOpen: false,
+        salvo: false
+    })
 
     async function pesquisarCep() {
         const response = await fetch(`https://viacep.com.br/ws/${dadosCliente.cep}/json/`);
@@ -50,7 +52,7 @@ export const FormClient = ({ setNovo }) => {
             logradouro: data.logradouro,
             bairro: data.bairro,
             cod_municipio: data.ibge,
-            CIDADE: data.localidade
+            cidade: data.localidade
         });
     }
 
@@ -81,8 +83,12 @@ export const FormClient = ({ setNovo }) => {
 
     const handleChange = (e) => {
         const input = e.target.value;
-        setDadosCliente({ ...dadosCliente, [inputName]: input })
-        if(keyboard.current){
+        if (inputName === "cpf") {
+            setDadosCliente({ ...dadosCliente, cpf: input, cpf_cnpj: input })
+        } else {
+            setDadosCliente({ ...dadosCliente, [inputName]: input })
+        }
+        if (keyboard.current) {
             keyboard.current.setInput(input);
         }
     };
@@ -107,39 +113,89 @@ export const FormClient = ({ setNovo }) => {
                 keyboard.current.setInput(dadosCliente[inputName]);
             }
         }
-        
+
         setKeyboardVisibility(true);
     };
 
-    const save = () => {
-        if(verifyInputVoids().length === 0){
-            fetch(`http://10.0.1.107:8090/autoAtendimento/cadastroCliente`,{
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(dadosCliente)
-            })
-            .then((res)=>{
-                if(res.status === 200 || res.status === 201){
-                    setMensageOpen(true);
-                    setMensage("Salvo com sucesso!")
-                    setNovo(false);
+    const save = async () => {
+        if (verifyInputVoids().length === 0) {
+            const documentResult = await verifyDocument();
+            if ((Array.isArray(documentResult) && documentResult.length === 0) || documentResult === null) {
+                fetch(`http://10.0.1.107:8090/autoAtendimento/cadastroCliente`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(dadosCliente)
+                })
+                    .then((res) => {
+                        if (res.ok) {
+                            return res.text();
+                        } else if (res.status === 400) {
+                            return res.json().then(data => Promise.reject(data));
+                        } else {
+                            throw new Error('Erro na requisição: ' + res.status);
+                        }
+                    })
+                    .then(data => {
+                        setMessage({
+                            salvo: true,
+                            messageOpen: true,
+                            message: data
+                        });
+                    })
+                    .catch(error => {
+                        setMessage({
+                            novo: false,
+                            messageOpen: true,
+                            message: Array.isArray(error) ? error.map((err)=> err.defaultMessage + "\n") : error.defaultMessage
+                        });
+                    });
+            } else {
+                setMessage({
+                    novo: false,
+                    messageOpen: true,
+                    message: "Cliente já cadastrado: " + documentResult
+                });
+            }
+        } else {
+            setMessage({
+                novo: false,
+                messageOpen: true,
+                message: "Preencha os campos: " + verifyInputVoids()
+            });
+        }
+    }
+    
+    const verifyDocument = async () => {
+        const response = await fetch(`http://10.0.1.107:8090/client/${dadosCliente.cpf_cnpj}`);
+        if (response.ok) {
+            const contentType = response.headers.get('content-type');
+            if (contentType && contentType.includes('application/json')) {
+                const data = await response.json();
+                if (Array.isArray(data) && data.length > 0) {
+                    var resultado = data[0] + " - " + data[1];
+                    return resultado;
+                } else {
+                    console.log('Nenhum documento encontrado');
+                    // Retornar algo apropriado para indicar que nenhum documento foi encontrado
+                    return null;
                 }
-            })
-        }else{
-            setMensageOpen(true);
-            setMensage("Preencha os campos: " + verifyInputVoids());
+            } else {
+                console.error('Resposta não contém JSON válido');
+                // Retornar algo apropriado para indicar um erro, se necessário
+                return null;
+            }
+        } else {
+            console.error('Erro na requisição: ' + response.status);
+            // Lidar com o erro de resposta não bem-sucedida aqui, se necessário
+            return null;
         }
     }
 
-    const verifyDocument = () => {
-
-    }
-
     const verifyInputVoids = () => {
-        const inputs = ["nome", "nome_fantasia", "cep", "celular", "cod_municipio", "cpf_cnpj", dadosCliente.contrib_icms ? "inscricao_estadual":''];
+        const inputs = ["nome", "nome_fantasia", "cep", "celular", "cod_municipio", dadosCliente.tipo_pessoa === "J" ? "cpf_cnpj" : "cpf", dadosCliente.contrib_icms ? "inscricao_estadual" : ''];
         var inputsEmpty = [];
-        for(var i of inputs){
-            if(dadosCliente[i] === ""){
+        for (var i of inputs) {
+            if (dadosCliente[i] === "") {
                 inputsEmpty.push(i.toString());
             }
         }
@@ -152,9 +208,9 @@ export const FormClient = ({ setNovo }) => {
 
     const onClickContainerHandler = (e) => {
         e.stopPropagation();
-        if(e.target.tagName.toLowerCase() !== 'input'){
+        if (e.target.classList.contains("dados") || e.target.classList.contains("labels") || e.target.classList.contains("documentos") || e.target.classList.contains("box-doc")) {
             setKeyboardVisibility(false);
-        }else if(e.target.tagName.toLowerCase() === 'input'){
+        } else if (e.target.tagName.toLowerCase() === 'input') {
             setKeyboardVisibility(true);
         }
     }
@@ -170,8 +226,8 @@ export const FormClient = ({ setNovo }) => {
                 <button onClick={() => setAba("documentos")} style={{ backgroundColor: aba === "documentos" ? "white" : "" }}>Documentos</button>
             </FC.NavBar>
             {aba === "gerais" ? (
-                <FC.DadosGerais >
-                    <form onSubmit={(e)=> {e.preventDefault()}}>
+                <FC.DadosGerais className="dados">
+                    <form onSubmit={(e) => { e.preventDefault() }}>
                         <div className="labels">
                             <label>Nome: </label>
                             <label>Fantasia: </label>
@@ -218,11 +274,11 @@ export const FormClient = ({ setNovo }) => {
                                 <input className="input-large" name="bairro" value={dadosCliente.bairro} onChange={handleChange} onFocus={(e) => onFocusHandler(e)} />
                             </div>
                             <div>
-                                <input className="codigo" name="cod_municipio" value={dadosCliente.cod_municipio} onChange={handleChange} onFocus={(e) => onFocusHandler(e)} />
+                                <input className="codigo" name="cod_municipio" value={dadosCliente.cod_municipio} onChange={handleChange} onFocus={(e) => onFocusHandler(e)} style={{ outline: 0 }} disabled />
                                 <button onClick={openCityModal}><img alt="lupa" src="/images/lupa.png" /></button>
-                                <input className="input-large" name="CIDADE" value={dadosCliente.CIDADE} onChange={handleChange} onFocus={(e) => onFocusHandler(e)} />
+                                <input className="input-large" name="cidade" value={dadosCliente.cidade} onChange={handleChange} onFocus={(e) => onFocusHandler(e)} style={{ outline: 0 }} disabled />
                                 <label>UF: </label>
-                                <select className="codigo" onChange={(e)=> setDadosCliente({...dadosCliente, sigla: e.target.value})}>
+                                <select className="codigo" onChange={(e) => setDadosCliente({ ...dadosCliente, sigla: e.target.value })}>
                                     <option value={dadosCliente.estado}>{dadosCliente.estado}</option>
                                     {estados.map((estado, index) => {
                                         return (
@@ -245,10 +301,10 @@ export const FormClient = ({ setNovo }) => {
                 </FC.DadosGerais>
             ) : (
                 <FC.Documentos>
-                    <div style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                    <div className="documentos" style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "center" }}>
                         <div className="box-doc">
                             <div>
-                                <input type="checkbox" checked={dadosCliente.tipo_pessoa === "J" ? true : false} onChange={()=> setDadosCliente({...dadosCliente, tipo_pessoa: "J"})}/>
+                                <input type="checkbox" checked={dadosCliente.tipo_pessoa === "J" ? true : false} onChange={() => setDadosCliente({ ...dadosCliente, tipo_pessoa: "J" })} />
                                 <label>Pessoa Juridica</label>
                             </div>
                             <div className="form-cpf">
@@ -258,18 +314,18 @@ export const FormClient = ({ setNovo }) => {
                                 </div>
                                 <div className="inputs">
                                     <div>
-                                        <input name="cpf_cnpj" value={dadosCliente.cpf_cnpj} onChange={handleChange} onFocus={(e) => onFocusHandler(e)} />
+                                        <input name="cpf_cnpj" value={dadosCliente.cpf_cnpj} onChange={handleChange} onFocus={(e) => onFocusHandler(e)} style={{ outline: dadosCliente.tipo_pessoa === "J" ? "" : 0 }} disabled={dadosCliente.tipo_pessoa === "J" ? false : true} />
                                         <button><img alt="lupa" src="/images/lupa.png" /></button>
                                     </div>
                                     <div>
-                                        <input name="inscricao_municipal" value={dadosCliente.inscricao_municipal} onChange={handleChange} onFocus={(e) => onFocusHandler(e)} />
+                                        <input name="inscricao_municipal" value={dadosCliente.inscricao_municipal} onChange={handleChange} onFocus={(e) => onFocusHandler(e)} style={{ outline: dadosCliente.tipo_pessoa === "J" ? "" : 0 }} disabled={dadosCliente.tipo_pessoa === "J" ? false : true} />
                                     </div>
                                 </div>
                             </div>
                         </div>
                         <div className="box-doc">
                             <div>
-                                <input type="checkbox" checked={dadosCliente.tipo_pessoa === 'F' ? true : false} onChange={()=> setDadosCliente({...dadosCliente, tipo_pessoa: "F"})}/>
+                                <input type="checkbox" checked={dadosCliente.tipo_pessoa === 'F' ? true : false} onChange={() => setDadosCliente({ ...dadosCliente, tipo_pessoa: "F" })} />
                                 <label>Pessoa Fisica</label>
                             </div>
                             <div className="form-cpf">
@@ -279,9 +335,9 @@ export const FormClient = ({ setNovo }) => {
                                     <label>Orgão: </label>
                                 </div>
                                 <div className="inputs">
-                                    <input name="cpf" value={dadosCliente.cpf} onChange={handleChange} onFocus={(e) => onFocusHandler(e)} />
-                                    <input name="rg" value={dadosCliente.rg} onChange={handleChange} onFocus={(e) => onFocusHandler(e)} />
-                                    <input name="orgao_rg" value={dadosCliente.orgao_rg} onChange={handleChange} onFocus={(e) => onFocusHandler(e)} />
+                                    <input name="cpf" value={dadosCliente.cpf} onChange={handleChange} onFocus={(e) => onFocusHandler(e)} style={{ outline: dadosCliente.tipo_pessoa === "F" ? "" : 0 }} disabled={dadosCliente.tipo_pessoa === "F" ? false : true} />
+                                    <input name="rg" value={dadosCliente.rg} onChange={handleChange} onFocus={(e) => onFocusHandler(e)} style={{ outline: dadosCliente.tipo_pessoa === "F" ? "" : 0 }} disabled={dadosCliente.tipo_pessoa === "F" ? false : true} />
+                                    <input name="orgao_rg" value={dadosCliente.orgao_rg} onChange={handleChange} onFocus={(e) => onFocusHandler(e)} style={{ outline: dadosCliente.tipo_pessoa === "F" ? "" : 0 }} disabled={dadosCliente.tipo_pessoa === "F" ? false : true} />
                                 </div>
                             </div>
                         </div>
@@ -294,12 +350,12 @@ export const FormClient = ({ setNovo }) => {
                         </div>
                         <div>
                             <label>Contribuinte de ICMS: </label>
-                            <input type="checkbox" value={dadosCliente.contrib_icms} checked={dadosCliente.contrib_icms ? true : false} onChange={(e)=> setDadosCliente({...dadosCliente, contrib_icms: e.target.value})}/>
+                            <input type="checkbox" value={dadosCliente.contrib_icms} checked={dadosCliente.contrib_icms ? true : false} onChange={(e) => setDadosCliente({ ...dadosCliente, contrib_icms: !dadosCliente.contrib_icms })} />
                         </div>
                     </div>
                 </FC.Documentos>
             )}
-            <button onClick={save}><img alt="salvar" src="/images/salvar.png" style={{margin: "5px"}}/>Salvar</button>
+            <button onClick={save}><img alt="salvar" src="/images/salvar.png" style={{ margin: "5px" }} />Salvar</button>
             {keyboardVisibility && isTabletWithoutMouse() ? (
                 <FC.Keyboard>
                     <Keyboard
@@ -311,8 +367,8 @@ export const FormClient = ({ setNovo }) => {
                     />
                 </FC.Keyboard>
             ) : null}
-            {cityModal && <CityModal onClose={()=> setCityModal(false)}/>}
-            {mensageOpen && <Mensage onClose={()=> setMensageOpen(false)} mensage={mensage}/>}
+            {cityModal && <CityModal onClose={() => setCityModal(false)} dadosCliente={dadosCliente} setDadosCliente={setDadosCliente} />}
+            {message.messageOpen && <Mensage onClose={() => {if(message.salvo){ setMessage({messageOpen: false}); setNovo(false)}else{setMessage({messageOpen: false})}}} message={message} />}
         </FC.Container>
     )
 }
