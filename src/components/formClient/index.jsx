@@ -121,7 +121,7 @@ export const FormClient = ({ setNovo }) => {
         if (verifyInputVoids().length === 0) {
             const documentResult = await verifyDocument();
             if ((Array.isArray(documentResult) && documentResult.length === 0) || documentResult === null) {
-                fetch(`http://10.0.1.107:8090/autoAtendimento/cadastroCliente`, {
+                fetch(process.env.REACT_APP_LINK_CADASTRAR_CLIENTE+`/autoAtendimento/cadastroCliente`, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify(dadosCliente)
@@ -166,7 +166,7 @@ export const FormClient = ({ setNovo }) => {
     }
     
     const verifyDocument = async () => {
-        const response = await fetch(`http://10.0.1.107:8090/client/${dadosCliente.cpf_cnpj}`);
+        const response = await fetch(process.env.REACT_APP_LINK_CONSULTAR_CLIENTE+`/${dadosCliente.cpf_cnpj}`);
         if (response.ok) {
             const contentType = response.headers.get('content-type');
             if (contentType && contentType.includes('application/json')) {
@@ -261,7 +261,7 @@ export const FormClient = ({ setNovo }) => {
                             </div>
                             <div className="cep-complemento">
                                 <input className="codigo" name="cep" value={dadosCliente.cep} onChange={handleChange} onFocus={(e) => onFocusHandler(e)} onKeyDown={(e) => e.key === "13" ? { pesquisarCep } : null} />
-                                <button onClick={(e) => { e.preventDefault(); pesquisarCep() }}><img alt="lupa" src="/images/lupa.png" /></button>
+                                <button onClick={(e) => { e.preventDefault(); pesquisarCep() }}><img alt="lupa" src="/images/LUPA.png" /></button>
                                 <label>Complemento: </label>
                                 <input className="input-large" name="complemento" value={dadosCliente.complemento} onChange={handleChange} onFocus={(e) => onFocusHandler(e)} />
                             </div>
@@ -275,7 +275,7 @@ export const FormClient = ({ setNovo }) => {
                             </div>
                             <div>
                                 <input className="codigo" name="cod_municipio" value={dadosCliente.cod_municipio} onChange={handleChange} onFocus={(e) => onFocusHandler(e)} style={{ outline: 0 }} disabled />
-                                <button onClick={openCityModal}><img alt="lupa" src="/images/lupa.png" /></button>
+                                <button onClick={openCityModal}><img alt="lupa" src="/images/LUPA.png" /></button>
                                 <input className="input-large" name="cidade" value={dadosCliente.cidade} onChange={handleChange} onFocus={(e) => onFocusHandler(e)} style={{ outline: 0 }} disabled />
                                 <label>UF: </label>
                                 <select className="codigo" onChange={(e) => setDadosCliente({ ...dadosCliente, sigla: e.target.value })}>
@@ -315,7 +315,7 @@ export const FormClient = ({ setNovo }) => {
                                 <div className="inputs">
                                     <div>
                                         <input name="cpf_cnpj" value={dadosCliente.cpf_cnpj} onChange={handleChange} onFocus={(e) => onFocusHandler(e)} style={{ outline: dadosCliente.tipo_pessoa === "J" ? "" : 0 }} disabled={dadosCliente.tipo_pessoa === "J" ? false : true} />
-                                        <button><img alt="lupa" src="/images/lupa.png" /></button>
+                                        <button><img alt="lupa" src="/images/LUPA.png" /></button>
                                     </div>
                                     <div>
                                         <input name="inscricao_municipal" value={dadosCliente.inscricao_municipal} onChange={handleChange} onFocus={(e) => onFocusHandler(e)} style={{ outline: dadosCliente.tipo_pessoa === "J" ? "" : 0 }} disabled={dadosCliente.tipo_pessoa === "J" ? false : true} />
@@ -346,7 +346,7 @@ export const FormClient = ({ setNovo }) => {
                         <div>
                             <label>Ins. Estadual: </label>
                             <input name="inscricao_estadual" value={dadosCliente.inscricao_estadual} onChange={handleChange} onFocus={(e) => onFocusHandler(e)} />
-                            <button><img alt="lupa" src="/images/lupa.png" /></button>
+                            <button><img alt="lupa" src="/images/LUPA.png" /></button>
                         </div>
                         <div>
                             <label>Contribuinte de ICMS: </label>
